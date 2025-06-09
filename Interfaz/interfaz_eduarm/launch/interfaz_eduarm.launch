@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="interfaz_eduarm" type="launch_interfaz_eduarm.py" name="interfaz_eduarm" output="screen" />
+</launch>
