@@ -1,0 +1,8 @@
+<launch>
+	<param name="token" value="$(arg token)" />
+	<node name="verificador_sesion2" pkg="verificador_ejercicio_propuesto_sesion2" type="verificador_ejercicio_propuesto_sesion2.py" output="screen">
+	  <param name="token" value="$(arg token)" />
+	</node>
+  
+	<arg name="token" default="default_value" />
+  </launch>
