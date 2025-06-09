@@ -1,0 +1,3 @@
+<launch>
+	<node name="pick_and_place" pkg="tracking_dos_objetos" type="pick_and_place.py" output="screen"/>
+</launch>

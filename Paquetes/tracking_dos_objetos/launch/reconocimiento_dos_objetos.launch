@@ -1,0 +1,4 @@
+<launch>
+	<node name="nodo_posicion_reconocimiento" pkg="tracking_dos_objetos" type="posicion_reconocimiento.py" output="screen"/>
+	<node name="nodo_reconocimiento_dos_objetos" pkg="tracking_dos_objetos" type="reconocimiento_dos_objetos.py" output="screen"/>
+</launch>

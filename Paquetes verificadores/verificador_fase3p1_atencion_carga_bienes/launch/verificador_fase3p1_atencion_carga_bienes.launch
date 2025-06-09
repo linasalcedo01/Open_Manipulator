@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="verificador_fase3p1_atencion_carga_bienes" type="verificador_fase3p1_atencion_carga_bienes.py" name="verificador_fase3p1_atencion_carga_bienes"  output="screen">
+  </node>
+</launch>

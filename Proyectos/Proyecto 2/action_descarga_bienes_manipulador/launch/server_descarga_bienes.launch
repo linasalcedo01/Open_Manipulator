@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="action_descarga_bienes_manipulador" type="server_descarga_bienes.py" name="server_descarga_bienes"  output="screen">
+  </node>
+</launch>

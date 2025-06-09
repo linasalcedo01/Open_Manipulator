@@ -1,0 +1,3 @@
+<launch>
+	<node name="verificador_sesion3" pkg="verificador_ejercicio_propuesto_sesion3" type="verificador_ejercicio_propuesto_sesion3.py" output="screen"/>
+</launch>

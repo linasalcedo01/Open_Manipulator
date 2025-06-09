@@ -1,0 +1,4 @@
+<launch>
+	<node name="nodo_segmentador_forma" pkg="segmentacion_forma" type="segmentacion_forma_redonda.py" output="screen"/>
+	<node name="nodo_posicion_reconocimiento" pkg="segmentacion_forma" type="posicion_reconocimiento.py" output="screen"/>
+</launch>

@@ -1,0 +1,7 @@
+string color #GOAL
+string forma
+int32 cantidad
+---
+string estado_final #RESULT
+---
+string estado_actual #FEEDBACK

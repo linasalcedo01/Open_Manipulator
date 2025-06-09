@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="movimiento_1_posicion" type="movimiento_1_posicion.py" name="nodo_movimiento_1_posicion"  output="screen">
+  </node>
+</launch>

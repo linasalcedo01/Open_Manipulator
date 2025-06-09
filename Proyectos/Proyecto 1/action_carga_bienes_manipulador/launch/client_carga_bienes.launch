@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="action_carga_bienes_manipulador" type="client_carga_bienes.py" name="client_carga_bienes"  output="screen">
+  </node>
+</launch>

@@ -1,0 +1,6 @@
+float64[] kinematics_pose1  # Lista con coordenadas [x, y, z] destino 1
+float64[] kinematics_pose2  # Lista con coordenadas [x, y, z] destino 2
+float64[] kinematics_pose3  # Lista con coordenadas [x, y, z] destino 3
+float64 path_time          # Tiempo de ejecución
+---
+bool ok             # Mensaje de confirmación

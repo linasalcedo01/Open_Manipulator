@@ -1,0 +1,4 @@
+<launch>
+	<node name="nodo_segmentador_rojo_Verde" pkg="segmentacion_rojo_verde" type="segmentacion_rojo_verde.py" output="screen"/>
+	<node name="nodo_publicador_pos_reconocimiento" pkg="segmentacion_rojo_verde" type="posicion_reconocimiento.py" output="screen"/>
+</launch>

@@ -1,0 +1,4 @@
+<launch>
+	<node name="nodo_posicion_reconocimiento" pkg="tracking_color_manual" type="posicion_reconocimiento.py" output="screen"/>
+	<node name="nodo_reconocimiento_color" pkg="tracking_color_manual" type="reconocimiento_color.py" output="screen"/>
+</launch>

@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="verificador_fase2p2_atencion_descarga_bienes" type="verificador_fase2p2_atencion_descarga_bienes.py" name="verificador_fase2p2_atencion_descarga_bienes"  output="screen">
+  </node>
+</launch>

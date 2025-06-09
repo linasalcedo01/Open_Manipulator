@@ -1,0 +1,4 @@
+<launch>
+	<node name="nodo_segmentador_Color" pkg="segmentacion_color" type="segmentacion_color_azul.py" output="screen"/>
+	<node name="nodo_posicion_reconocimiento" pkg="segmentacion_color" type="posicion_reconocimiento.py" output="screen"/>
+</launch>

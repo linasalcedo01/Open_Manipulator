@@ -1,0 +1,3 @@
+<launch>
+	<node name="tracking_pos_final_color" pkg="tracking_color_automatico" type="tracking_pos_final.py" output="screen"/>
+</launch>

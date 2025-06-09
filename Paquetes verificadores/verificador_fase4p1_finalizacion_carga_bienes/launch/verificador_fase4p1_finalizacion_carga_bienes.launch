@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="verificador_fase4p1_finalizacion_carga_bienes" type="verificador_fase4p1_finalizacion_carga_bienes.py" name="verificador_fase4p1_finalizacion_carga_bienes"  output="screen">
+  </node>
+</launch>

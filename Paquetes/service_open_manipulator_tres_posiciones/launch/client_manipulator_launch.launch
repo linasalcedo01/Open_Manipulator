@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="service_open_manipulator_tres_posiciones" type="go_location_client.py" name="manipulator_service_client_tres_posiciones"  output="screen">
+  </node>
+</launch>
