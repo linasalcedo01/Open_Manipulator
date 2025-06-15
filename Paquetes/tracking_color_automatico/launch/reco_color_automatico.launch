@@ -1,4 +1,12 @@
 <launch>
-	<node name="nodo_posicion_reconocimiento" pkg="tracking_color_automatico" type="posicion_reconocimiento.py" output="screen"/>
-	<node name="nodo_reconocimiento_color" pkg="tracking_color_automatico" type="reconocimiento_color.py" output="screen"/>
-</launch>
+	<arg name="namespace" default="" />
+  
+	<node name="nodo_posicion_reconocimiento" pkg="tracking_color_automatico" type="posicion_reconocimiento.py" output="screen">
+	  <param name="namespace" value="$(arg namespace)" />
+	</node>
+  
+	<node name="nodo_reconocimiento_color" pkg="tracking_color_automatico" type="reconocimiento_color.py" output="screen">
+	  <param name="namespace" value="$(arg namespace)" />
+	</node>
+  </launch>
+  

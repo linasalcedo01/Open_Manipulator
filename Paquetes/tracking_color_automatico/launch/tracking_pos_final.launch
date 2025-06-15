@@ -1,3 +1,8 @@
 <launch>
-	<node name="tracking_pos_final_color" pkg="tracking_color_automatico" type="tracking_pos_final.py" output="screen"/>
-</launch>
+	<arg name="namespace" default=""/>
+  
+	<node name="tracking_pos_final_color" pkg="tracking_color_automatico" type="tracking_pos_final.py" output="screen">
+	  <param name="namespace" value="$(arg namespace)" />
+	</node>
+  </launch>
+  

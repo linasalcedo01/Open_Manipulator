@@ -1,11 +1,11 @@
 <launch>
-    <arg name="hostname" default="" />
+    <arg name="namespace" default="" />
 
     <node name="nodo_publicador_pos_reconocimiento" pkg="tracking_color_manual" type="posicion_reconocimiento.py" output="screen">
-        <param name="hostname" value="$(arg hostname)" />
+        <param name="namespace" value="$(arg namespace)" />
     </node>
 
     <node name="nodo_reconocimiento_color" pkg="tracking_color_manual" type="reconocimiento_color.py" output="screen">
-        <param name="hostname" value="$(arg hostname)" />
+        <param name="namespace" value="$(arg namespace)" />
     </node>
 </launch>

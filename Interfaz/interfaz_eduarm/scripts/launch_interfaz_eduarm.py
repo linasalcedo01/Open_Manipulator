@@ -551,22 +551,26 @@ def on_btn_cerrar_gripper_clicked(qnode):
     """
     joint_angle = [-0.01]  # Ángulo para cerrar gripper
 
-    if not qnode.setToolControl(joint_angle):
-        print("[ERR!!] Failed to send service")
-        return
-
-    print("Send gripper close")
+    soul=qnode.setToolControl(joint_angle)
+    if soul==True:
+        print(joint_angle)
+        rospy.sleep(0.2)
+        qnode.Tool_attach(joint_angle) #puede haber problema porque se envia justo despues d eordenar mover el gripper
+        print("Send gripper close")
 
 def on_btn_abrir_gripper_clicked(qnode):
     """
     Función para manejar el clic del botón "abrir gripper".
     """
     joint_angle = [0.01]  # Ángulo para abrir gripper
-    if not qnode.setToolControl(joint_angle):
-        print("[ERR!!] Failed to send service")
+    soul=qnode.setToolControl(joint_angle)
+    if soul==True:
+        print(joint_angle)
+        rospy.sleep(0.2)
+        qnode.Tool_attach(joint_angle) #puede haber problema porque se envia justo despues de ordenar mover el gripper
+    else:
+        print("[ERR!!] Failed to send gripper position")
         return
-
-    print("Send gripper close")
 
 def on_btn_act_joint_angle_clicked(MainWindow):
     """
@@ -610,7 +614,14 @@ def on_btn_send_joint_angle_clicked(qnode, MainWindow):
         return
 
     # Enviar comando para mover el gripper
-    if not qnode.setToolControl(gripper_angle):
+    soul=qnode.setToolControl(gripper_angle)
+    if soul==True:
+        print(gripper_angle)
+        rospy.sleep(0.2)
+        qnode.Tool_attach(gripper_angle) #puede haber problema porque se envia justo despues d eordenar mover el gripper
+        print("Send task pose + gripper position")
+
+    else:
         print("[ERR!!] Failed to send gripper position")
         return
 
@@ -635,12 +646,16 @@ def on_btn_send_cartesian_clicked(qnode, MainWindow):
         return
 
     # Enviar comando para mover el gripper
-    if not qnode.setToolControl(gripper_angle):
+    soul=qnode.setToolControl(gripper_angle)
+    if soul==True:
         print(gripper_angle)
+        rospy.sleep(0.2)
+        qnode.Tool_attach(gripper_angle) #puede haber problema porque se envia justo despues d eordenar mover el gripper
+        print("Send task pose + gripper position")
+
+    else:
         print("[ERR!!] Failed to send gripper position")
         return
-
-    print("Send task pose + gripper position")
 
 if __name__ == "__main__":
     main()

@@ -16,6 +16,7 @@ class process:
     def __init__(self):
         super(process, self).__init__()
         rospy.init_node('tracking', anonymous=True)
+        self.namespace = rospy.get_param('~namespace', 'default_value') 
         self.present_kinematic_position = [0.0, 0.0, 0.0]  # Inicialización segura
         self.kinematics_pose = None
         global x_min, x_max, y_min, y_max,x,y
@@ -25,12 +26,12 @@ class process:
         x=None
         y=None
         identificacion = False
-        self.kinematics_pose_subscriber = rospy.Subscriber('/gamora/gripper/kinematics_pose', KinematicsPose, self.kinematics_pose_callback)
-        self.centroide_for_tracking = rospy.Subscriber("/gamora/objeto/Centroide", Point, self.centroide)
-        self.publicador_agarrado = rospy.Publisher('/gamora/state_agarre', Bool, queue_size=10)
+        self.kinematics_pose_subscriber = rospy.Subscriber(f'{self.namespace}/gripper/kinematics_pose', KinematicsPose, self.kinematics_pose_callback)
+        self.centroide_for_tracking = rospy.Subscriber(f"{self.namespace}/objeto/Centroide", Point, self.centroide)
+        self.publicador_agarrado = rospy.Publisher(f'{self.namespace}/state_agarre', Bool, queue_size=10)
         #Ejecución de movimiento del robot
-        self.goal_task_space_path_position_only_client = rospy.ServiceProxy('/gamora/goal_task_space_path_position_only', SetKinematicsPose)
-        self.set_tool_control_client = rospy.ServiceProxy('/gamora/goal_tool_control', SetJointPosition)
+        self.goal_task_space_path_position_only_client = rospy.ServiceProxy(f'{self.namespace}/goal_task_space_path_position_only', SetKinematicsPose)
+        self.set_tool_control_client = rospy.ServiceProxy(f'{self.namespace}/goal_tool_control', SetJointPosition)
          # Lanzar hilo para Comparaciones
         global running
         running = True

@@ -155,18 +155,18 @@ class movimiento_pos_reconocimiento:
 
         #Ejecución de movimiento del robot
         rospy.init_node('nodo_publicador_pos_reconocimiento', anonymous=True)
-        self.hostname = rospy.get_param('~hostname', 'default_value') 
-        self.joint_state_subscriber = rospy.Subscriber(f'{self.hostname}/joint_states', JointState, self.joint_states_callback)
+        self.namespace = rospy.get_param('~namespace', 'default_value') 
+        self.joint_state_subscriber = rospy.Subscriber(f'{self.namespace}/joint_states', JointState, self.joint_states_callback)
 
-        self.kinematics_pose_subscriber = rospy.Subscriber(f'{self.hostname}/gripper/kinematics_pose', KinematicsPose, self.kinematics_pose_callback)
-        self.open_manipulator_states_sub = rospy.Subscriber(f"{self.hostname}/states", OpenManipulatorState, self.manipulator_states_callback)
+        self.kinematics_pose_subscriber = rospy.Subscriber(f'{self.namespace}/gripper/kinematics_pose', KinematicsPose, self.kinematics_pose_callback)
+        self.open_manipulator_states_sub = rospy.Subscriber(f"{self.namespace}/states", OpenManipulatorState, self.manipulator_states_callback)
         #Ejecución de movimiento del robot
-        self.set_actuator_state_client = rospy.ServiceProxy(f'{self.hostname}/set_actuator_state', SetActuatorState)
-        self.set_joint_position_client = rospy.ServiceProxy(f'{self.hostname}/goal_joint_space_path', SetJointPosition)
-        self.set_tool_control_client = rospy.ServiceProxy(f'{self.hostname}/goal_tool_control', SetJointPosition)
-        self.goal_task_space_path_position_only_client = rospy.ServiceProxy(f'{self.hostname}/goal_task_space_path_position_only', SetKinematicsPose)
-        self.open_manipulator_states_sub = rospy.Subscriber(f"{self.hostname}/states", OpenManipulatorState, self.manipulator_states_callback)
-        self.publicador_cumplimiento_posicion_reco = rospy.Publisher(f'{self.hostname}/cumplimiento_posicion_reco', Bool, queue_size=10,latch=True)
+        self.set_actuator_state_client = rospy.ServiceProxy(f'{self.namespace}/set_actuator_state', SetActuatorState)
+        self.set_joint_position_client = rospy.ServiceProxy(f'{self.namespace}/goal_joint_space_path', SetJointPosition)
+        self.set_tool_control_client = rospy.ServiceProxy(f'{self.namespace}/goal_tool_control', SetJointPosition)
+        self.goal_task_space_path_position_only_client = rospy.ServiceProxy(f'{self.namespace}/goal_task_space_path_position_only', SetKinematicsPose)
+        self.open_manipulator_states_sub = rospy.Subscriber(f"{self.namespace}/states", OpenManipulatorState, self.manipulator_states_callback)
+        self.publicador_cumplimiento_posicion_reco = rospy.Publisher(f'{self.namespace}/cumplimiento_posicion_reco', Bool, queue_size=10,latch=True)
 
     def joint_states_callback(self, msg):
         """

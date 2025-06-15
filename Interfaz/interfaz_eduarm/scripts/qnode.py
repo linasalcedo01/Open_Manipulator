@@ -2,6 +2,8 @@
 from cv_bridge import CvBridge, CvBridgeError
 import cv2  # OpenCV
 import rospy
+from gazebo_msgs.msg import ContactsState
+from std_msgs.msg import String
 import time
 from geometry_msgs.msg import Point  # Tipo de mensaje para coordenadas
 import roslaunch
@@ -15,6 +17,8 @@ from open_manipulator_msgs.srv import (
 from open_manipulator_msgs.msg import JointPosition, KinematicsPose, OpenManipulatorState
 from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtGui import QImage, QPixmap
+from gazebo_ros_link_attacher.srv import Attach, AttachRequest, AttachResponse
+
 
 
 class QNode(QObject):
@@ -24,6 +28,7 @@ class QNode(QObject):
     def __init__(self):
         super(QNode, self).__init__()
         rospy.init_node('qnode_joint_state_subscriber', anonymous=True)
+        rate = rospy.Rate(10)
         global ARREGLO
         ARREGLO = None
         global HSV_inferior
@@ -36,8 +41,9 @@ class QNode(QObject):
         canny_min =None
         canny_max=None
         vertices=None
-        self.camarareturn2 = None
-        self.camarareturn5 = None
+        self.detectedObject=None
+        
+
         
         self.present_kinematic_position = [0.0, 0.0, 0.0]
         self.kinematics_pose = None
@@ -45,12 +51,7 @@ class QNode(QObject):
         self.open_manipulator_actuator_enabled = False
         self.process_sim = None  # Para el proceso de la simulación
         self.process_real = None  # Para el proceso real
-        self.eleccion_hostname_robot=None
-        self.autorizacion_hostname=None
-        self.camarareturn = None
 
-
- 
     def seleccion_hostname(self, seleccion):
         self.hostname_seleccionado=seleccion
     
@@ -68,11 +69,13 @@ class QNode(QObject):
             self.nebula_camera_reco_forma_real = rospy.Subscriber('/nebula/usb_cam/image_raw', Image, self.camera_reco_forma_callback_real)
             self.nebula_publicador_centroide = rospy.Publisher('/nebula/objeto/Centroide', Point, queue_size=10)
             self.nebula_publicador_dimensiones= rospy.Publisher('/nebula/dimensiones_imagen', Point, queue_size=10)
+            
 
             self.nebula_set_actuator_state_client = rospy.ServiceProxy('/nebula/set_actuator_state', SetActuatorState)
             self.nebula_set_joint_position_client = rospy.ServiceProxy('/nebula/goal_joint_space_path', SetJointPosition)
             self.nebula_set_tool_control_client = rospy.ServiceProxy('/nebula/goal_tool_control', SetJointPosition)
             self.nebula_goal_task_space_path_position_only_client = rospy.ServiceProxy('/nebula/goal_task_space_path_position_only', SetKinematicsPose)
+
 
 
         if self.hostname_seleccionado =='/gamora':
@@ -92,6 +95,29 @@ class QNode(QObject):
             self.gamora_set_joint_position_client = rospy.ServiceProxy('/gamora/goal_joint_space_path', SetJointPosition)
             self.gamora_set_tool_control_client = rospy.ServiceProxy('/gamora/goal_tool_control', SetJointPosition)
             self.gamora_goal_task_space_path_position_only_client = rospy.ServiceProxy('/gamora/goal_task_space_path_position_only', SetKinematicsPose)
+
+    def hostname_simulado(self):
+        self.joint_state_subscriber = rospy.Subscriber('/joint_states', JointState, self.joint_states_callback)
+        self.kinematics_pose_subscriber = rospy.Subscriber('/gripper/kinematics_pose', KinematicsPose, self.kinematics_pose_callback)
+        self.open_manipulator_states_sub = rospy.Subscriber("/states", OpenManipulatorState, self.manipulator_states_callback)
+        self.camera_manipulator = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_manipulator_Callback)
+        self.camera_reco_color = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_reco_color_callback)
+        self.camera_reco_forma = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_reco_forma_callback)
+        self.camera_manipulator_real = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_manipulator_Callback_real)
+        self.camera_reco_color_real = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_reco_color_callback_real)
+        self.camera_reco_forma_real = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_reco_forma_callback_real)
+        self.publicador_centroide = rospy.Publisher('/objeto/Centroide', Point, queue_size=10)
+        self.publicador_dimensiones= rospy.Publisher('/dimensiones_imagen', Point, queue_size=10)
+        self.sub_contacts = rospy.Subscriber ('/contact_states', ContactsState, self.get_contacts)
+
+        self.set_actuator_state_client = rospy.ServiceProxy('/set_actuator_state', SetActuatorState)
+        self.set_joint_position_client = rospy.ServiceProxy('/goal_joint_space_path', SetJointPosition)
+        self.set_tool_control_client = rospy.ServiceProxy('/goal_tool_control', SetJointPosition)
+        self.goal_task_space_path_position_only_client = rospy.ServiceProxy('/goal_task_space_path_position_only', SetKinematicsPose)
+        self.detach_srv = rospy.ServiceProxy('/link_attacher_node/detach',Attach)
+        self.attach_srv = rospy.ServiceProxy('/link_attacher_node/attach',Attach)
+        rospy.sleep(0.5)
+
 
     def desconectar_hostname_real(self):
         if self.hostname_seleccionado == '/nebula':
@@ -209,30 +235,6 @@ class QNode(QObject):
                 delattr(self, srv)
 
         rospy.loginfo("✅ Todos los tópicos, publicadores y servicios de Nebula han sido detenidos.")
-
-
-
-    def hostname_simulado(self):
-        self.joint_state_subscriber = rospy.Subscriber('/joint_states', JointState, self.joint_states_callback)
-        self.kinematics_pose_subscriber = rospy.Subscriber('/gripper/kinematics_pose', KinematicsPose, self.kinematics_pose_callback)
-        self.open_manipulator_states_sub = rospy.Subscriber("/states", OpenManipulatorState, self.manipulator_states_callback)
-        self.camera_manipulator = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_manipulator_Callback)
-        self.camera_reco_color = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_reco_color_callback)
-        self.camera_reco_forma = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_reco_forma_callback)
-        self.camera_manipulator_real = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_manipulator_Callback_real)
-        self.camera_reco_color_real = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_reco_color_callback_real)
-        self.camera_reco_forma_real = rospy.Subscriber('/usb_cam/image_raw', Image, self.camera_reco_forma_callback_real)
-        self.publicador_centroide = rospy.Publisher('/objeto/Centroide', Point, queue_size=10)
-        self.publicador_dimensiones= rospy.Publisher('/dimensiones_imagen', Point, queue_size=10)
-
-        self.set_actuator_state_client = rospy.ServiceProxy('/set_actuator_state', SetActuatorState)
-        self.set_joint_position_client = rospy.ServiceProxy('/goal_joint_space_path', SetJointPosition)
-        self.set_tool_control_client = rospy.ServiceProxy('/goal_tool_control', SetJointPosition)
-        self.goal_task_space_path_position_only_client = rospy.ServiceProxy('/goal_task_space_path_position_only', SetKinematicsPose)
-
-        
-
-    
 
     
     def set_reco_color(self, hsv_inferior,hsv_superior): #estoy cambiando la variable global DATA por el arreglo data que me llega
@@ -653,6 +655,15 @@ class QNode(QObject):
         except rospy.ServiceException as e:
             rospy.logerr(f"Service call failed: {e}")
             return False
+        
+    def Tool_attach(self,joint_angle): 
+        if joint_angle==[-0.01]:
+            #while detectedObject is None:
+            self.attach_detect()
+        if joint_angle== [0.01]:
+            #while detectedObject is None:
+            self.detach_detect()
+
 
     def setTaskSpacePath(self, kinematics_pose, path_time):
         """
@@ -681,7 +692,6 @@ class QNode(QObject):
 
     def start_robot_controller_sim(self):
         """Inicia el nodo del controlador del manipulador."""
-
         try:
             self.process = subprocess.Popen(
                 ["roslaunch", "open_manipulator_controller", "open_manipulator_controller.launch", "use_platform:=false"],
@@ -693,8 +703,6 @@ class QNode(QObject):
             rospy.logerr(f"Error al lanzar el nodo: {e}")
 
     def stop_robot_controller_sim(self):
-        self.desconectar_hostname_sim()
-        
         """Detiene el nodo del controlador del manipulador."""
         if self.process:
             os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)  # Terminar el grupo de procesos
@@ -703,6 +711,57 @@ class QNode(QObject):
             print("Nodo del controlador detenido.")
         else:
             print("No hay un nodo en ejecución para detener.")
+
+    def attach_detect(self):
+        if self.detectedObject is not None and self.resetvalue is not True:
+            rospy.loginfo(f"Attaching gripper and {self.detectedObject}")
+            req = AttachRequest()
+            req.model_name_1 = "open_manipulator"
+            req.link_name_1 = "gripper_link_sub"
+            req.model_name_2 = self.detectedObject
+            req.link_name_2 = "link"
+            self.attach_srv.call(req)
+        else:
+            print("objeto no detectado -> no collision")
+
+    def detach_detect(self): #hay problema si no agarra nada
+        if self.detectedObject is not None:
+            rospy.loginfo(f"Detach gripper and {self.detectedObject}")
+            req1 = AttachRequest()
+            req1.model_name_1 = "open_manipulator"
+            req1.link_name_1 = "gripper_link_sub"
+            req1.model_name_2 = self.detectedObject
+            req1.link_name_2 = "link"
+            self.detach_srv.call(req1)
+            
+
+    def get_contacts(self, msg):
+        if (len(msg.states) == 0):
+            self.resetvalue=True
+            #rospy.loginfo("No contacts were detected!")
+        else:
+            if 'gripper_link_sub' in msg.states[0].collision1_name:
+                self.resetvalue=False
+                #rospy.loginfo("Collision 1 detected with %s." % msg.states[0].collision2_name.split("::")[0])
+                objeto = msg.states[0].collision2_name.split("::")[0]
+                objetos_validos = ["esfera_roja", "esfera_azul", "esfera_verde","cubo_rojo", "cubo_verde", "cubo_azul","cubo_verdep", "esfera_rojap"]
+                print(f"{objeto}")
+                if objeto in objetos_validos:
+                    self.detectedObject=objeto
+                    
+
+                    
+                    
+            elif 'gripper_link_sub' in msg.states[0].collision2_name:
+                self.resetvalue=False
+                #rospy.loginfo("Collision 2 detected with %s." % msg.states[0].collision1_name.split("::")[0])
+                objeto = msg.states[0].collision1_name.split("::")[0]
+                print(f"{objeto}")
+                objetos_validos = ["esfera_roja", "esfera_azul", "esfera_verde","cubo_rojo", "cubo_verde", "cubo_azul","cubo_verdep", "esfera_rojap"]
+                if objeto in objetos_validos:
+                    self.detectedObject=objeto
+            #else:
+            #    self
 
     def run(self):
         """ Mantiene el nodo ROS en ejecución. """
