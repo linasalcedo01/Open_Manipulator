@@ -52,12 +52,12 @@ class QNode(QObject):
         self.process_sim = None  # Para el proceso de la simulación
         self.process_real = None  # Para el proceso real
 
-    def seleccion_hostname(self, seleccion):
-        self.hostname_seleccionado=seleccion
+    def seleccion_namespace(self, seleccion):
+        self.namespace_seleccionado=seleccion
     
 
-    def hostname_real(self):
-        if self.hostname_seleccionado == '/nebula':
+    def namespace_real(self):
+        if self.namespace_seleccionado == '/nebula':
             self.nebula_joint_state_subscriber = rospy.Subscriber('/nebula/joint_states', JointState, self.joint_states_callback)
             self.nebula_kinematics_pose_subscriber = rospy.Subscriber('/nebula/gripper/kinematics_pose', KinematicsPose, self.kinematics_pose_callback)
             self.nebula_open_manipulator_states_sub = rospy.Subscriber("/nebula/states", OpenManipulatorState, self.manipulator_states_callback)
@@ -78,7 +78,7 @@ class QNode(QObject):
 
 
 
-        if self.hostname_seleccionado =='/gamora':
+        if self.namespace_seleccionado =='/gamora':
             self.gamora_joint_state_subscriber = rospy.Subscriber('/gamora/joint_states', JointState, self.joint_states_callback)
             self.gamora_kinematics_pose_subscriber = rospy.Subscriber('/gamora/gripper/kinematics_pose', KinematicsPose, self.kinematics_pose_callback)
             self.gamora_open_manipulator_states_sub = rospy.Subscriber("/gamora/states", OpenManipulatorState, self.manipulator_states_callback)
@@ -96,7 +96,7 @@ class QNode(QObject):
             self.gamora_set_tool_control_client = rospy.ServiceProxy('/gamora/goal_tool_control', SetJointPosition)
             self.gamora_goal_task_space_path_position_only_client = rospy.ServiceProxy('/gamora/goal_task_space_path_position_only', SetKinematicsPose)
 
-    def hostname_simulado(self):
+    def namespace_simulado(self):
         self.joint_state_subscriber = rospy.Subscriber('/joint_states', JointState, self.joint_states_callback)
         self.kinematics_pose_subscriber = rospy.Subscriber('/gripper/kinematics_pose', KinematicsPose, self.kinematics_pose_callback)
         self.open_manipulator_states_sub = rospy.Subscriber("/states", OpenManipulatorState, self.manipulator_states_callback)
@@ -119,8 +119,8 @@ class QNode(QObject):
         rospy.sleep(0.5)
 
 
-    def desconectar_hostname_real(self):
-        if self.hostname_seleccionado == '/nebula':
+    def desconectar_namespace_real(self):
+        if self.namespace_seleccionado == '/nebula':
             # Lista de suscriptores
             subs = [
                 'nebula_joint_state_subscriber',
@@ -158,7 +158,7 @@ class QNode(QObject):
                     delattr(self, srv)
             rospy.loginfo("✅ Todos los tópicos, publicadores y servicios de Nebula han sido detenidos.")
 
-        if self.hostname_seleccionado == '/gamora':
+        if self.namespace_seleccionado == '/gamora':
                     # Lista de suscriptores
             subs = [
                 'gamora_joint_state_subscriber',
@@ -196,7 +196,7 @@ class QNode(QObject):
                     delattr(self, srv)
             rospy.loginfo("✅ Todos los tópicos, publicadores y servicios de Gamora han sido detenidos.")
 
-    def desconectar_hostname_sim(self):
+    def desconectar_namespace_sim(self):
         # Lista de suscriptores
         self.present_joint_angle=None
         subs = [

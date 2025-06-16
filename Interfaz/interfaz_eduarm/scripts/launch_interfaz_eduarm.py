@@ -14,6 +14,8 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from qnode import QNode  # Asegúrate de importar correctamente la clase QNode
 
 def main():
+    global seleccion
+    seleccion=None
     #incializar variables que necesito para la parte de reco por color
 #    global reco_azul
 #    global reco_rojo
@@ -91,7 +93,7 @@ def main():
     MainWindow.btn_reset_forma.clicked.connect(lambda: on_btn_reset_forma(qnode, MainWindow))
 
     #conectar la opción del Qcombobox que elige el topico del robot
-    MainWindow.topicos_election.currentTextChanged.connect(lambda: hostname(qnode, MainWindow))
+    MainWindow.topicos_election.currentTextChanged.connect(lambda: namespace(qnode, MainWindow))
 
 
 
@@ -107,9 +109,10 @@ def main():
 #    MainWindow.btn_apli_color.setEnabled(False)
 #    MainWindow.btn_apli_forma.setEnabled(False)
 
-def hostname(qnode,MainWindow):
+def namespace(qnode,MainWindow):
+    global seleccion
     seleccion = MainWindow.topicos_election.currentText()
-    qnode.seleccion_hostname(seleccion)
+    qnode.seleccion_namespace(seleccion)
 
 
 
@@ -209,7 +212,7 @@ def on_btn_connect_real_clicked(timer, qnode, MainWindow):
     """
     pixmap2=None
     pixmap5=None
-    #qnode.desconectar_hostname_sim()
+    #qnode.desconectar_namespace_sim()
     # Esperar hasta que el controlador publique los datos
     timeout = 10  # Tiempo máximo de espera en segundos
     start_time = time.time()
@@ -241,7 +244,7 @@ def on_btn_connect_real_clicked(timer, qnode, MainWindow):
 
     # Una vez que el controlador está listo, continuar con la conexión
     
-    qnode.hostname_real()
+    qnode.namespace_real()
     timer.timeout.connect(lambda: timerCallback(qnode, MainWindow))  # Conectar el temporizador al callback
     timer.start(100)  # Iniciar el temporizador cada 100 ms
     MainWindow.state_real.setText("Conectado")
@@ -269,7 +272,7 @@ def on_btn_connect_sim_clicked(timer, qnode, MainWindow):
     Función que maneja el evento cuando se hace clic en el botón de conexión.
     Inicia el nodo del controlador del manipulador y espera hasta que esté listo.
     """
-    qnode.hostname_simulado()
+    qnode.namespace_simulado()
     qnode.start_robot_controller_sim()
     
 
@@ -336,7 +339,7 @@ def on_btn_disconnect_real_clicked(qnode, timer, MainWindow):
     Función que maneja el evento cuando se hace clic en el botón de desconexión.
     Detiene el temporizador.
     """
-    qnode.desconectar_hostname_real()
+    qnode.desconectar_namespace_real()
     MainWindow.btn_connect_sim.setEnabled(True)
     MainWindow.btn_connect_real.setEnabled(True)
     MainWindow.value_joint1.setText("0.00")
@@ -549,28 +552,43 @@ def on_btn_cerrar_gripper_clicked(qnode):
     """
     Función para manejar el clic del botón "Cerrar gripper".
     """
-    joint_angle = [-0.01]  # Ángulo para cerrar gripper
+    global seleccion 
+    if(seleccion=="/gamora" or seleccion=="/nebula"):
+        joint_angle = [-0.025]  # Ángulo para cerrar gripper
+        soul=qnode.setToolControl(joint_angle)
+    else:
+        joint_angle = [-0.01]  # Ángulo para cerrar gripper
 
-    soul=qnode.setToolControl(joint_angle)
-    if soul==True:
-        print(joint_angle)
-        rospy.sleep(0.2)
-        qnode.Tool_attach(joint_angle) #puede haber problema porque se envia justo despues d eordenar mover el gripper
-        print("Send gripper close")
+        soul=qnode.setToolControl(joint_angle)
+        if soul==True:
+            print(joint_angle)
+            rospy.sleep(0.2)
+            qnode.Tool_attach(joint_angle) #puede haber problema porque se envia justo despues d eordenar mover el gripper
+            print("Send gripper close")
+        else:
+            print("[ERR!!] Failed to send gripper position")
+            return
 
 def on_btn_abrir_gripper_clicked(qnode):
     """
     Función para manejar el clic del botón "abrir gripper".
     """
-    joint_angle = [0.01]  # Ángulo para abrir gripper
-    soul=qnode.setToolControl(joint_angle)
-    if soul==True:
-        print(joint_angle)
-        rospy.sleep(0.2)
-        qnode.Tool_attach(joint_angle) #puede haber problema porque se envia justo despues de ordenar mover el gripper
+    global seleccion 
+    if(seleccion=="/gamora" or seleccion=="/nebula"):
+        joint_angle = [-0.018]  # Ángulo para cerrar gripper
+        soul=qnode.setToolControl(joint_angle)
     else:
-        print("[ERR!!] Failed to send gripper position")
-        return
+        joint_angle = [0.01]  # Ángulo para cerrar gripper
+
+        soul=qnode.setToolControl(joint_angle)
+        if soul==True:
+            print(joint_angle)
+            rospy.sleep(0.2)
+            qnode.Tool_attach(joint_angle) #puede haber problema porque se envia justo despues d eordenar mover el gripper
+            print("Send gripper close")
+        else:
+            print("[ERR!!] Failed to send gripper position")
+            return
 
 def on_btn_act_joint_angle_clicked(MainWindow):
     """
