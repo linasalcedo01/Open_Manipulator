@@ -482,14 +482,23 @@ class pluggin_attach:
 
 
     def abrir_gripper(self):
-        joint_angle=[0.01]
-        gripper_open = self.setToolControl(joint_angle)
-        kaka= self.Tool_attach(joint_angle)
+        if self.namespace=="":
+            joint_angle=[0.01]
+            gripper_open = self.setToolControl(joint_angle)
+            kaka= self.Tool_attach(joint_angle)
+        if (self.namespace=="/nebula" or self.namespace=="/gamora"):
+            joint_angle=[-0.018]
+            gripper_closed = self.setToolControl(joint_angle)
+        
 
     def cerrar_gripper(self):
-        joint_angle=[-0.01]
-        gripper_closed = self.setToolControl(joint_angle)
-        kaka2= self.Tool_attach(joint_angle)
+        if self.namespace=="":
+            joint_angle=[-0.01]
+            gripper_closed = self.setToolControl(joint_angle)
+            kaka2= self.Tool_attach(joint_angle)
+        if (self.namespace=="/nebula" or self.namespace=="/gamora"):
+            joint_angle=[-0.025]
+            gripper_closed = self.setToolControl(joint_angle)
 
     def posicion_inicial(self):
         joint_angle = 0.01
