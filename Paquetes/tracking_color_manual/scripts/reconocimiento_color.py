@@ -56,7 +56,7 @@ class camera_process:
         rospy.init_node('nodo_reconocimiento_color', anonymous=True)
         #Ejecución de movimiento del robot
         self.namespace = rospy.get_param('~namespace', 'default_value') 
-        self.camera_callback = rospy.Subscriber(f"{self.namespace}/usb_cam/image_raw", Image, self.camera_callback)
+        self.camera_callbackk = rospy.Subscriber(f"{self.namespace}/usb_cam/image_raw", Image, self.camera_callback)
         self.publicador_centroide = rospy.Publisher(f'{self.namespace}/objeto/Centroide', Point, queue_size=10)
         self.publicador_dimensiones = rospy.Publisher(f'{self.namespace}/dimensiones_imagen', Point, queue_size=10)
         try:
