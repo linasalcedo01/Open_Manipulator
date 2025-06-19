@@ -1,4 +1,12 @@
 <launch>
+	<arg name="namespace" default="" />
+  
 	<node name="nodo_posicion_reconocimiento" pkg="tracking_dos_objetos" type="posicion_reconocimiento.py" output="screen"/>
+	  <param name="namespace" value="$(arg namespace)" />
+	</node>
+  
 	<node name="nodo_reconocimiento_dos_objetos" pkg="tracking_dos_objetos" type="reconocimiento_dos_objetos.py" output="screen"/>
-</launch>
+	  <param name="namespace" value="$(arg namespace)" />
+	</node>
+  </launch>
+  

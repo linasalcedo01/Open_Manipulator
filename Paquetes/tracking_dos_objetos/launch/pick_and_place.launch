@@ -1,3 +1,7 @@
 <launch>
+	<arg name="namespace" default=""/>
 	<node name="pick_and_place" pkg="tracking_dos_objetos" type="pick_and_place.py" output="screen"/>
-</launch>
+	  <param name="namespace" value="$(arg namespace)" />
+	</node>
+  </launch>
+  

@@ -9,8 +9,13 @@ from geometry_msgs.msg import Point  # Tipo de mensaje para coordenadas
 
 class camera_process:
     global hsv_inferior, hsv_superior
-    hsv_inferior = np.array([100, 50, 50])  # HSV mínimo
-    hsv_superior = np.array([140, 255, 255])  # HSV máximo
+    #hsv_inferior = np.array([100, 50, 50])  # HSV mínimo azul
+    #hsv_superior = np.array([140, 255, 255])  # HSV máximo azul
+    #hsv_inferior = np.array([0, 50, 50])  # HSV mínimo rojo
+    #hsv_superior = np.array([10, 255, 255])  # HSV máximo rojo
+    hsv_inferior = np.array([40, 50, 50])  # HSV mínimo verde
+    hsv_superior = np.array([80, 255, 255])  # HSV máximo verde
+
 
     def camera_callback(self, data):
         bridge = CvBridge()
