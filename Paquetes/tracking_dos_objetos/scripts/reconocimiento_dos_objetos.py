@@ -145,9 +145,10 @@ class camera_process():
 ###################################################################################################################
     def __init__(self):
         rospy.init_node('nodo_reconocimiento_forma', anonymous=True)
-        self.camera_callback = rospy.Subscriber("/gamora/usb_cam/image_raw", Image, self.camera_callback)
-        self.publicador_centroide_objeto1= rospy.Publisher('/gamora/objeto1/Centroide', Point, queue_size=10)
-        self.publicador_centroide_objeto2 = rospy.Publisher('/gamora/objeto2/Centroide', Point, queue_size=10)
+        self.namespace = rospy.get_param('~namespace', 'default_value') 
+        self.camera_callback = rospy.Subscriber(f"{self.namespace}/usb_cam/image_raw", Image, self.camera_callback)
+        self.publicador_centroide_objeto1= rospy.Publisher(f'{self.namespace}/objeto1/Centroide', Point, queue_size=10)
+        self.publicador_centroide_objeto2 = rospy.Publisher(f'{self.namespace}/objeto2/Centroide', Point, queue_size=10)
 
     def run():
         """ Mantiene el nodo ROS en ejecución. """

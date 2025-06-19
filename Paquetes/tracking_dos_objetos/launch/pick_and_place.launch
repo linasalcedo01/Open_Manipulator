@@ -4,4 +4,3 @@
 	  <param name="namespace" value="$(arg namespace)" />
 	</node>
   </launch>
-  
